@@ -6,7 +6,7 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".MainActivity$PlaceholderFragment"
     android:id="@+id/RBron"
-    android:background="#ff164732">
+    android:background="@drawable/bronco_logo">
 
     <Button
         android:id="@+id/map_button"
@@ -15,44 +15,6 @@
         android:text="@string/Map"
         android:onClick="mapGraph"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/maptext"/>
-
-    <ImageView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/bronco_logo"
-        android:layout_alignParentTop="true"
-        android:id="@+id/bronco"
-        android:layout_above="@+id/broncotext" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Maps"
-        android:id="@+id/maptext"
-        android:background="#00ff8c16"
-        android:textColorHighlight="#ff000000"
-        android:textColor="#ffffb617"
-        android:textSize="40dp"
-        android:textStyle="bold|italic"
-        android:textIsSelectable="false"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/broncotext" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Bronco"
-        android:id="@+id/broncotext"
-        android:background="#00ff8c16"
-        android:textColorHighlight="#ff000000"
-        android:textColor="#ffffb617"
-        android:textSize="40dp"
-        android:textStyle="bold|italic"
-        android:textIsSelectable="false"
-        android:layout_above="@+id/map_button"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

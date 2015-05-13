@@ -1,0 +1,21 @@
+Cal Poly Pomona building list
+Id	LatLong	 Events
+1	34.059378,-117.824055	Building 1 	Event: This is Building 1
+2	34.057896,-117.826413	College of Agriculture	Event: Agriculture Event right here
+3	34.058129,-117.825066	Science Laboratory	Event:This is Building 3
+4	34.057249,-117.825225	BioTechnology building 	EVent: This is Building 4
+5	34.057853,-117.824163	College Of Letter, Art, And Social Science 	Event: This is building 5
+6	34.058471,-117.823009	College of Education and Integrative Studies Event: This is building 6
+7	34.057171,-117.827110	College of Environmental Design Event: This is building 7
+8	34.058717,-117.824648	College of Science Event: This is building 8
+9	34.059077,-117.822481	College of Engineering Event: This is building 9
+15	34.057322,-117.821285	Library Event: This is the Library
+35	34.056633, -117.821290	Bronco Student Center
+92	34.057575,-117.826032	Laboratory Facility
+94	34.058962, -117.823312	University Office Building 
+95	34.057904,-117.822797	Cultural Center
+97	34.057606,-117.823725	Campus Center
+98	34.059157,-117.819933	CLA Building 	Event:This is the CLA
+162	34.061197, -117.819820	College of Business of Administration
+163	34.061197, -117.819820	College of Business of Administration
+164	34.061197, -117.819820	College of Business of Administration

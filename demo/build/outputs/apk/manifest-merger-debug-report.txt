@@ -1,0 +1,149 @@
+-- Merging decision tree log ---
+manifest
+ADDED from AndroidManifest.xml:2:1
+	xmlns:android
+		ADDED from AndroidManifest.xml:2:11
+	package
+		ADDED from AndroidManifest.xml:3:11
+	android:versionName
+		ADDED from AndroidManifest.xml:5:11
+	android:versionCode
+		ADDED from AndroidManifest.xml:4:11
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+uses-sdk
+ADDED from AndroidManifest.xml:7:5
+MERGED from com.google.maps.android:library:0.4-SNAPSHOT:5:5
+MERGED from com.google.android.gms:play-services-maps:6.5.87:18:5
+MERGED from com.google.android.gms:play-services-base:6.5.87:18:5
+MERGED from com.android.support:support-v4:21.0.0:15:5
+MERGED from com.google.android.gms:play-services-maps:6.5.87:18:5
+MERGED from com.google.android.gms:play-services-base:6.5.87:18:5
+MERGED from com.android.support:support-v4:21.0.0:15:5
+	android:targetSdkVersion
+		ADDED from AndroidManifest.xml:9:13
+	android:minSdkVersion
+		ADDED from AndroidManifest.xml:8:13
+permission#com.google.maps.android.utils.permission.MAPS_RECEIVE
+ADDED from AndroidManifest.xml:11:5
+	android:protectionLevel
+		ADDED from AndroidManifest.xml:13:13
+	android:name
+		ADDED from AndroidManifest.xml:12:13
+uses-permission#com.google.maps.android.utils.permission.MAPS_RECEIVE
+ADDED from AndroidManifest.xml:14:5
+	android:name
+		ADDED from AndroidManifest.xml:14:22
+uses-permission#android.permission.INTERNET
+ADDED from AndroidManifest.xml:16:5
+	android:name
+		ADDED from AndroidManifest.xml:16:22
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from AndroidManifest.xml:17:5
+	android:name
+		ADDED from AndroidManifest.xml:17:22
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from AndroidManifest.xml:18:5
+	android:name
+		ADDED from AndroidManifest.xml:18:22
+uses-permission#com.google.android.providers.gsf.permission.READ_GSERVICES
+ADDED from AndroidManifest.xml:19:5
+	android:name
+		ADDED from AndroidManifest.xml:19:22
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
+ADDED from AndroidManifest.xml:21:5
+	android:name
+		ADDED from AndroidManifest.xml:21:22
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from AndroidManifest.xml:22:5
+	android:name
+		ADDED from AndroidManifest.xml:22:22
+uses-feature#0x00020000
+ADDED from AndroidManifest.xml:24:5
+	android:required
+		ADDED from AndroidManifest.xml:26:13
+	android:glEsVersion
+		ADDED from AndroidManifest.xml:25:13
+application
+ADDED from AndroidManifest.xml:28:5
+MERGED from com.google.maps.android:library:0.4-SNAPSHOT:7:5
+MERGED from com.google.android.gms:play-services-maps:6.5.87:19:5
+MERGED from com.google.android.gms:play-services-base:6.5.87:20:5
+MERGED from com.android.support:support-v4:21.0.0:16:5
+MERGED from com.google.android.gms:play-services-maps:6.5.87:19:5
+MERGED from com.google.android.gms:play-services-base:6.5.87:20:5
+MERGED from com.android.support:support-v4:21.0.0:16:5
+	android:label
+		ADDED from AndroidManifest.xml:30:13
+	android:allowBackup
+		ADDED from AndroidManifest.xml:32:13
+	android:icon
+		ADDED from AndroidManifest.xml:29:13
+	android:theme
+		ADDED from AndroidManifest.xml:31:13
+meta-data#com.google.android.gms.version
+ADDED from AndroidManifest.xml:34:9
+MERGED from com.google.android.gms:play-services-base:6.5.87:21:9
+MERGED from com.google.android.gms:play-services-base:6.5.87:21:9
+	android:name
+		ADDED from AndroidManifest.xml:35:17
+	android:value
+		ADDED from AndroidManifest.xml:36:17
+meta-data#com.google.android.maps.v2.API_KEY
+ADDED from AndroidManifest.xml:38:9
+	android:name
+		ADDED from AndroidManifest.xml:39:17
+	android:value
+		ADDED from AndroidManifest.xml:40:17
+activity#com.google.maps.android.utils.demo.MainActivity
+ADDED from AndroidManifest.xml:42:9
+	android:label
+		ADDED from AndroidManifest.xml:44:17
+	android:name
+		ADDED from AndroidManifest.xml:43:17
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from AndroidManifest.xml:45:13
+action#android.intent.action.MAIN
+ADDED from AndroidManifest.xml:46:17
+	android:name
+		ADDED from AndroidManifest.xml:46:25
+category#android.intent.category.LAUNCHER
+ADDED from AndroidManifest.xml:47:17
+	android:name
+		ADDED from AndroidManifest.xml:47:27
+activity#com.google.maps.android.utils.demo.PolyDecodeDemoActivity
+ADDED from AndroidManifest.xml:51:9
+	android:name
+		ADDED from AndroidManifest.xml:51:19
+activity#com.google.maps.android.utils.demo.IconGeneratorDemoActivity
+ADDED from AndroidManifest.xml:52:9
+	android:name
+		ADDED from AndroidManifest.xml:52:19
+activity#com.google.maps.android.utils.demo.DistanceDemoActivity
+ADDED from AndroidManifest.xml:53:9
+	android:name
+		ADDED from AndroidManifest.xml:53:19
+activity#com.google.maps.android.utils.demo.ClusteringDemoActivity
+ADDED from AndroidManifest.xml:54:9
+	android:name
+		ADDED from AndroidManifest.xml:54:19
+activity#com.google.maps.android.utils.demo.BigClusteringDemoActivity
+ADDED from AndroidManifest.xml:55:9
+	android:name
+		ADDED from AndroidManifest.xml:55:19
+activity#com.google.maps.android.utils.demo.CustomMarkerClusteringDemoActivity
+ADDED from AndroidManifest.xml:56:9
+	android:name
+		ADDED from AndroidManifest.xml:56:19
+activity#com.google.maps.android.utils.demo.TileProviderAndProjectionDemo
+ADDED from AndroidManifest.xml:57:9
+	android:name
+		ADDED from AndroidManifest.xml:57:19
+activity#com.google.maps.android.utils.demo.HeatmapsDemoActivity
+ADDED from AndroidManifest.xml:58:9
+	android:name
+		ADDED from AndroidManifest.xml:58:19
+activity#com.google.maps.android.utils.demo.HeatmapsPlacesDemoActivity
+ADDED from AndroidManifest.xml:59:9
+	android:name
+		ADDED from AndroidManifest.xml:59:19

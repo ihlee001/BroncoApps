@@ -6,4 +6,21 @@
     <string name="action_settings">Settings</string>
     <string name="Map">Start</string>
     <string name="activity_map">activity_map</string>
+    <string name="refresh">Refresh Events</string>
+    <string-array name="building_arrays">
+        <item>1：</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+    <string name="building_prompt">Choose a Building</string>
+    <string-array name="mode_arrays">
+        <item>Driving</item>
+        <item>Walking</item>
+    </string-array>
+    <string name="mode_prompt">Choose a Building</string>
 </resources>
