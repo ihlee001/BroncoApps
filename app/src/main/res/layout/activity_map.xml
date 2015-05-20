@@ -21,7 +21,7 @@
         android:textColor="#000000"
         android:textStyle="bold"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"/>
 
     <Button
         android:id="@+id/go_button"

@@ -34,12 +34,22 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.json.JSONArray;
 import org.w3c.dom.Document;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,7 +88,7 @@ public class GMaps extends FragmentActivity{
             e.printStackTrace();
         }
 
-        temp_grab_events();
+        button_listener();
 
         try{
             //Initialize Building drop down list Spinner
@@ -154,13 +164,13 @@ public class GMaps extends FragmentActivity{
     }
 
 /////////////////////////////////////Event Initializer///////////////////////////////////////////
-    private void initializeEvents() throws IOException{
+    public void initializeEvents() throws IOException{
         ArrayList<Event> events = new ArrayList<Event>();
 
         EventParser parser = new EventParser(Environment.getExternalStorageDirectory().getPath() + "/Download/buildingList2.txt");
 
         events = parser.getEvents();
-
+        Log.d("initializeEvents", "" + events.size());
         for(int i = 0; i < events.size(); i++){
             Log.i("Events", events.get(i).getString());
         }
@@ -179,6 +189,24 @@ public class GMaps extends FragmentActivity{
             Marker mark = googleMap.addMarker(ph.getMarker());
             polygon_markers.put(ph.id, mark);
         }
+    }
+
+    //Refreshes the initialized events list in case there is something that went amiss
+    void button_listener(){
+        Button button = (Button) findViewById(R.id.refresh_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new JSONAsyncTask().execute("http://broncomaps.com/edit/events/data/");
+                try{
+                    initializeEvents();
+                    initializeBuildings();
+                }
+                catch(IOException e){
+                    Log.e("intializeEvents", "failed");
+                }
+            }
+        });
     }
 
 ///////////////////////////////////Polygon Initializer/////////////////////////////////////////////
@@ -530,5 +558,79 @@ public class GMaps extends FragmentActivity{
 
     private void makeUseOfNewLocation(Location location){
         this.location = location;
+    }
+
+    ///////////////////////////////////////JSON///////////////////////////////////////////////
+    class JSONAsyncTask extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... urls){
+            DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
+            HttpPost httppost = new HttpPost("http://broncomaps.com/edit/events/data/");
+            httppost.setHeader("Content-type", "application/json");
+            HttpPost httpost2 = new HttpPost("http://ec2-52-10-224-162.us-west-2.compute.amazonaws.com/edit/locations/data/");
+
+            String path = Environment.getExternalStorageDirectory().getPath() + "/Download";
+
+            File file = new File(path, "BuildingList2.txt");
+
+            InputStream inputStream = null;
+            String result;
+            JSONArray jArray;
+
+            try {
+                HttpResponse response = httpclient.execute(httppost);
+                HttpEntity entity = response.getEntity();
+
+                inputStream = entity.getContent();
+                // json is UTF-8 by default
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
+                StringBuilder sb = new StringBuilder();
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                result = sb.toString();
+                reader.close();
+
+                FileOutputStream stream = new FileOutputStream(file);
+                jArray = new JSONArray(result);
+                for (int i=0; i < jArray.length(); i++)
+                {
+                    try {
+                        org.json.JSONObject jobject = jArray.getJSONObject(i);
+                        String towrite = jobject.getString("title") + "\t" +
+                                jobject.getString("description") + "\t" +
+                                jobject.getString("location") + "\t" +
+                                jobject.getString("location_details") + "\t" +
+                                jobject.getString("start_date") + "\t" +
+                                jobject.getString("end_date") + "\t" +
+                                jobject.getString("start_time") + "\t" +
+                                jobject.getString("end_time") + "\t" +
+                                jobject.getString("Lon") + ", " +
+                                jobject.getString("Lat") + "\n";
+                        stream.write(towrite.getBytes());
+                        Log.d("json", towrite);
+                    } catch (org.json.JSONException e) {
+                        // Oops
+                    }
+                }
+
+                stream.close();
+                Log.d("Finisher", "Try Method Complete");
+            } catch (FileNotFoundException e){
+                Log.e("login activiyt", "file not found");
+            } catch (IOException e) {
+                Log.e("login activity", "Can not read file");
+            } catch (org.json.JSONException e){
+                // Oops
+            }
+            finally {
+                try{
+                    if(inputStream != null) inputStream.close();
+                }catch(Exception squish){}
+            }
+            return false;
+        }
     }
 }
