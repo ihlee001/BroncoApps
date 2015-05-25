@@ -11,13 +11,19 @@ public class Event {
     private LatLng location;
     private String title;
     private String description;
+    private String location_type;
+    private String start_time;
+    private String end_time;
     private MarkerOptions marker;
     int building_number;
 
-    public Event(String title, String description, LatLng location, String building_number_str){
+    public Event(String title, String description, String location_type, LatLng location, String start_time, String end_time, String building_number_str){
         this.title = title;
         this.description = description;
         this.location = location;
+        this.location_type = location_type;
+        this.start_time = start_time;
+        this.end_time = end_time;
         building_number = Integer.parseInt(building_number_str);
         if(building_number == 0){
             marker = new MarkerOptions();
@@ -34,6 +40,8 @@ public class Event {
     public LatLng getLocation(){
         return location;
     }
+
+    public int get_building_number(){ return building_number;}
 
     public String getTitle(){
         return title;

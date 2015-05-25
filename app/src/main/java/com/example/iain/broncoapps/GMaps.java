@@ -53,6 +53,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -94,12 +95,14 @@ public class GMaps extends FragmentActivity{
             //Initialize Building drop down list Spinner
             initializeBuildings();
             createPolygons();
-            initializeEvents();
+            //initializeEvents();
             initializeGo();
         } catch(IOException e){
             e.printStackTrace();
         }
     }
+
+
 
 ///////////////////////////////////////Map Initialization //////////////////////////////////////
     private void initializeMap() {
@@ -210,9 +213,13 @@ public class GMaps extends FragmentActivity{
     }
 
 ///////////////////////////////////Polygon Initializer/////////////////////////////////////////////
-    public void createPolygons(){
-        polygonholder_list = new HashMap<Integer, PolygonHolder>(10);
-        polygonholder_list.put(8, new PolygonHolder(googleMap.addPolygon(new PolygonOptions().add(new LatLng(34.05871267583157, -117.82521486282349),
+    public void createPolygons() throws IOException{
+        polygonholder_list = new HashMap<Integer, PolygonHolder>();
+        PolygonParser parser = new PolygonParser(Environment.getExternalStorageDirectory().getPath() + "/Download/buildingList1.txt");
+        for(int index: parser.polygonoptions.keySet()){
+            polygonholder_list.put(index, new PolygonHolder(googleMap.addPolygon(parser.polygonoptions.get(index)), index));
+        }
+/*        polygonholder_list.put(8, new PolygonHolder(googleMap.addPolygon(new PolygonOptions().add(new LatLng(34.05871267583157, -117.82521486282349),
                 new LatLng(34.05891266584845, -117.8247481584549), new LatLng(34.05830380588406, -117.82436728477478),
                 new LatLng(34.058094925910545, -117.82487154006958)).strokeColor(Color.BLACK).strokeWidth(4).fillColor(0x3F000000)), 8));
 
@@ -234,7 +241,7 @@ public class GMaps extends FragmentActivity{
 
         polygonholder_list.put(1, new PolygonHolder(googleMap.addPolygon(new PolygonOptions().add(new LatLng(34.059494856322, -117.82485276461),
                 new LatLng(34.059832613848, -117.82400786877), new LatLng(34.059588184194, -117.82386034727),
-                new LatLng(34.059248203594, -117.82471060753)).strokeColor(Color.BLACK).strokeWidth(4).fillColor(0x3F000000)), 1));
+                new LatLng(34.059248203594, -117.82471060753)).strokeColor(Color.BLACK).strokeWidth(4).fillColor(0x3F000000)), 1));*/
 
     }
 
@@ -565,7 +572,7 @@ public class GMaps extends FragmentActivity{
         @Override
         protected Boolean doInBackground(String... urls){
             DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
-            HttpPost httppost = new HttpPost("http://broncomaps.com/edit/events/data/");
+            HttpPost httppost = new HttpPost("http://ec2-52-10-224-162.us-west-2.compute.amazonaws.com/edit/events/data/");
             httppost.setHeader("Content-type", "application/json");
             HttpPost httpost2 = new HttpPost("http://ec2-52-10-224-162.us-west-2.compute.amazonaws.com/edit/locations/data/");
 
@@ -601,14 +608,17 @@ public class GMaps extends FragmentActivity{
                         org.json.JSONObject jobject = jArray.getJSONObject(i);
                         String towrite = jobject.getString("title") + "\t" +
                                 jobject.getString("description") + "\t" +
+                                jobject.getString("location_type") + "\t" +
                                 jobject.getString("location") + "\t" +
+                                jobject.getString("lat") + ", " +
+                                jobject.getString("lon") + "\t" +
                                 jobject.getString("location_details") + "\t" +
                                 jobject.getString("start_date") + "\t" +
                                 jobject.getString("end_date") + "\t" +
                                 jobject.getString("start_time") + "\t" +
                                 jobject.getString("end_time") + "\t" +
-                                jobject.getString("Lon") + ", " +
-                                jobject.getString("Lat") + "\n";
+                                jobject.getString("id") + "\t" +
+                                jobject.getString("bNumber") + "\n";
                         stream.write(towrite.getBytes());
                         Log.d("json", towrite);
                     } catch (org.json.JSONException e) {

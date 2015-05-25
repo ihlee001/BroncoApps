@@ -29,12 +29,12 @@ public class EventParser {
 
     private void addToEventArray(String currentLine){
         String[] parts = currentLine.split("\t");
-        String[] latlong = parts[8].split(",");
-        double lat = Double.parseDouble(latlong[1]);
-        double lon = Double.parseDouble(latlong[0]);
+        String[] latlong = parts[4].split(",");
+        double lat = Double.parseDouble(latlong[0]);
+        double lon = Double.parseDouble(latlong[1]);
         LatLng location = new LatLng(lat, lon);
 
-        events.add(new Event(parts[0], parts[1], location, parts[2]));
+        events.add(new Event(parts[0], parts[1], parts[2], location, parts[6], parts[7], parts[11]));
     }
 
     public ArrayList<Event> getEvents(){

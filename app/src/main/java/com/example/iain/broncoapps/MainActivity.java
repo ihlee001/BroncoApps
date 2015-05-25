@@ -84,7 +84,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void mapGraph(View v){
-        new JSONAsyncTask().execute("http://broncomaps.com/edit/events/data/");
+        new JSONAsyncTask().execute("http://ec2-52-10-224-162.us-west-2.compute.amazonaws.com/edit/events/data/");
         Intent intent = new Intent(this, GMaps.class);
         startActivity(intent);
     }
@@ -93,22 +93,29 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected Boolean doInBackground(String... urls){
             DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
-            HttpPost httppost = new HttpPost("http://broncomaps.com/edit/events/data/");
+            HttpPost httppost = new HttpPost("http://ec2-52-10-224-162.us-west-2.compute.amazonaws.com/edit/events/data/");
+            HttpPost httppost2 = new HttpPost("http://ec2-52-10-224-162.us-west-2.compute.amazonaws.com/edit/locations/data/");
             httppost.setHeader("Content-type", "application/json");
+            httppost2.setHeader("Content-type", "application/json");
 
             String path = Environment.getExternalStorageDirectory().getPath() + "/Download";
 
             File file = new File(path, "BuildingList2.txt");
+            File file2 = new File(path, "BuildingList1.txt");
 
             InputStream inputStream = null;
+            InputStream inputStream2 = null;
             String result;
             JSONArray jArray;
 
             try {
                 HttpResponse response = httpclient.execute(httppost);
+                HttpResponse response2 = httpclient.execute(httppost2);
                 HttpEntity entity = response.getEntity();
+                HttpEntity entity2 = response2.getEntity();
 
                 inputStream = entity.getContent();
+                inputStream2 = entity2.getContent();
                 // json is UTF-8 by default
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 8);
                 StringBuilder sb = new StringBuilder();
@@ -128,16 +135,54 @@ public class MainActivity extends ActionBarActivity {
                         org.json.JSONObject jobject = jArray.getJSONObject(i);
                         String towrite = jobject.getString("title") + "\t" +
                                 jobject.getString("description") + "\t" +
+                                jobject.getString("location_type") + "\t" +
                                 jobject.getString("location") + "\t" +
+                                jobject.getString("lat") + ", " +
+                                jobject.getString("lon") + "\t" +
                                 jobject.getString("location_details") + "\t" +
                                 jobject.getString("start_date") + "\t" +
                                 jobject.getString("end_date") + "\t" +
                                 jobject.getString("start_time") + "\t" +
                                 jobject.getString("end_time") + "\t" +
-                                jobject.getString("Lon") + ", " +
-                                jobject.getString("Lat") + "\n";
+                                jobject.getString("id") + "\t" +
+                                jobject.getString("bNumber") + "\n";
                         stream.write(towrite.getBytes());
                         /*String oneObjectsItem2 = oneObject.getString("description");*/
+                        Log.d("json", towrite);
+                    } catch (org.json.JSONException e) {
+                        // Oops
+                    }
+                }
+
+                //write building json
+                reader = new BufferedReader(new InputStreamReader(inputStream2, "UTF-8"), 8);
+                sb = new StringBuilder();
+
+                while ((line = reader.readLine()) != null){
+                    sb.append(line + "\n");
+                }
+                result = sb.toString();
+                reader.close();
+
+                stream = new FileOutputStream(file2);
+                jArray = new JSONArray(result);
+                JSONArray jArray2;
+                for (int i=0; i < jArray.length(); i++)
+                {
+                    try {
+                        org.json.JSONObject jobject = jArray.getJSONObject(i);
+                        jArray2 = new JSONArray(jobject.getString("coordinates"));
+                        String nested_array = "";
+                        for(int j = 0; j < jArray2.length(); j++){
+                            org.json.JSONObject jobject2 = jArray2.getJSONObject(i);
+                            nested_array += jobject2.getString("k") + ", " +
+                                    jobject2.getString("D") + "\t";
+                        }
+                        String towrite = jobject.getString("name") + "\t" +
+                                jobject.getString("number") + "\t" +
+                                jobject.getString("id") + "\t" +
+                                nested_array + "\n";
+                        stream.write(towrite.getBytes());
                         Log.d("json", towrite);
                     } catch (org.json.JSONException e) {
                         // Oops
