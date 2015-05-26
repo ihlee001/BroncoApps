@@ -495,7 +495,7 @@ public class GMaps extends FragmentActivity{
                         }
                         else{
                             ph.polygon.setVisible(false);
-                            polygon_markers.get(ph.id).setVisible(true);
+                            polygon_markers.get(ph.id).setVisible(false);
 
                         }
                     }
