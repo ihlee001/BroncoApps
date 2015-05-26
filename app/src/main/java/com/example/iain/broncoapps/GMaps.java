@@ -56,8 +56,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.lang.Math;
 
 /**
  * Created by Iain on 3/24/2015.
@@ -65,7 +64,7 @@ import java.util.TimerTask;
 public class GMaps extends FragmentActivity{
 
     private Handler uiCallback;
-    private GoogleMap googleMap;
+    GoogleMap googleMap;
     private MarkerOptions markerOptions;
     private Location location;
     private Map<Integer, PolygonHolder> polygonholder_list;
@@ -75,6 +74,10 @@ public class GMaps extends FragmentActivity{
     private Thread plotUserMovement;
     private Location previous_location;
     private Polygon[] polygon_list;
+    private Marker you;
+    Polyline polyline;
+    private LatLng here;
+    private Float previous_bearing;
 
 
     @Override
@@ -132,7 +135,7 @@ public class GMaps extends FragmentActivity{
             markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.user_marker));
             markerOptions.title("you");
 
-            googleMap.addMarker(markerOptions);
+            you = googleMap.addMarker(markerOptions);
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation,
                     (float) 16.0));
         }
@@ -290,117 +293,15 @@ public class GMaps extends FragmentActivity{
     private void mapDirections(){
         Log.d("mapDirections", "refreshes here");
         plotUserMovement.run();
-        location = getLocation();
-        final LatLng startingLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        final Thread t = new Thread(){
-
-            @Override
-            public void run(){
-                try{
-                    Log.i("sleep", "sleep");
-                    sleep(10000);
-
-
-                }catch(InterruptedException exception){
-                    exception.printStackTrace();
-                }
-                if(startingLocation == null){
-                    Log.e("mapdirection", "no starting location");
-                    run();
-                }
-                else{
-                    //Log.e("mapDireciton", "goes into else");
-                    //progress.dismiss();
-                    PlotDirectionTask task = new PlotDirectionTask();
-                    //Log.e("mapDireciton", "goes into plotdirectiontask");
-                    LatLng[] arrayLatLngs = new LatLng[2];
-
-                    arrayLatLngs[0] = startingLocation;
-                    arrayLatLngs[1] = getEndingLocation();
-                    if(arrayLatLngs[1] == null)
-                    {
-                        //Log.e("mapdirection", "no ending location");
-                    }
-
-                    task.execute(arrayLatLngs);
-                    //Log.e("mapDireciton", "goes into task");
-                    int period = 1000;
-
-                    Timer timer = new Timer();
-
-                    timer.scheduleAtFixedRate(new TimerTask(){
-                        public void run(){
-                            updateDistanceToUser();
-                            updateMap();
-                        }
-
-
-
-                        private void updateDistanceToUser() {
-                            for(int i =0; i<buildings.size(); i++){
-                                buildings.get(i).setDistance(calCulateDistance(startingLocation, buildings.get(i).getLocation(),'K'));
-                            }
-
-                        }
-
-                        private double calCulateDistance(LatLng start, LatLng end, char unit){
-                            double theta = start.longitude - end.longitude;
-                            double dist = Math.sin(deg2rad(start.latitude)) * Math.sin(deg2rad(end.latitude)) + Math.cos(deg2rad(start.latitude)) * Math.cos(deg2rad(end.latitude)) * Math.cos(deg2rad(theta));
-                            dist = rad2deg(Math.acos(dist)) * 60 * 1.1515;
-                            if (unit == 'K') {
-                                dist = dist * 1.609344;
-                            } else if (unit == 'N') {
-                                dist = dist * 0.8684;
-                            }
-                            return (dist);
-                        }
-
-                        /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-    					    /*::  This function converts decimal degrees to radians             :*/
-    					    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-                        private double deg2rad(double deg) {
-                            return (deg * Math.PI / 180.0);
-                        }
-
-                        /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-    					    /*::  This function converts radians to decimal degrees             :*/
-    					    /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-                        private double rad2deg(double rad) {
-                            return (rad * 180.0 / Math.PI);
-                        }
-
-                        private void updateMap() {
-                            for(int i = 0; i< buildings.size(); i++){
-                                if(buildings.get(i).getDistance()<0.094697 && buildings.get(i).getMarker().getSnippet()!=null){
-                                    Message message = new Message();
-                                    message.arg1 = i;
-                                    uiCallback.sendMessage(message);
-                                }
-                            }
-
-                        }
-                    }, 0, period);
-                    //Log.e("mapDireciton", "timer");
-                }
-            }
-        };
-
-        t.start();
-        Log.d("t", "thread ends");
     }
 
-    public LatLng getEndingLocation(){
-        Spinner building = (Spinner) findViewById(R.id.building);
-        int position = building.getSelectedItemPosition();
-//    	Log.e("Ending location", )
-        return buildings.get(position).getLocation();
-    }
 
     class PlotDirectionTask extends AsyncTask<LatLng, Void, ArrayList<LatLng>>{
 
         @Override
         protected ArrayList<LatLng> doInBackground(LatLng... latlong) {
             Log.e("Plotdirectiontask", "doinbackground");
+
             GMapV2Direction md = new GMapV2Direction();
             LatLng start;
             LatLng end;
@@ -411,7 +312,6 @@ public class GMaps extends FragmentActivity{
             Document doc = md.getDocument(start, end, GMapV2Direction.MODE_WALKING);
             Log.e("Direction", doc.toString());
             ArrayList<LatLng> directionPoint = md.getDirection(doc);
-
             return directionPoint;
         }
 
@@ -423,119 +323,151 @@ public class GMaps extends FragmentActivity{
             for (int i = 0; i < directionPoint.size(); i++) {
                 rectLine.add(directionPoint.get(i));
             }
-            Polyline polylin = googleMap.addPolyline(rectLine);
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(directionPoint.get(0),
-                    (float) 15.0));
+            if(polyline != null) polyline.remove();
+            polyline = googleMap.addPolyline(rectLine);
         }
 
     }
 
     class DynamicLocation extends Thread{
         public void run(){
-            Log.e("dynamiclocation", "run");
-            LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-            LocationListener locationListener = new LocationListener() {
-                public void onLocationChanged(Location location){
-                    updateMapUI(location);
-                }
+            location = getLocation();
+            here = new LatLng(location.getLatitude(), location.getLongitude());
+            if(here == null){
+                Log.e("mapdirection", "no starting location");
+                run();
+            }
+            else{
+                LatLng[] arrayLatLngs = new LatLng[2];
+                arrayLatLngs[0] = here;
+                arrayLatLngs[1] = getEndingLocation();
+                new PlotDirectionTask().execute(arrayLatLngs);
 
-                private void updateMapUI(Location location) {
-                    MarkerOptions marker = new MarkerOptions();
-                    marker.position(new LatLng(location.getLatitude(), location.getLongitude()));
-                    marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.user_marker));
-                    float[] result = new float[1];
-                    if(previous_location != null){
-                        Location.distanceBetween(previous_location.getLatitude(), previous_location.getLongitude(), location.getLatitude(), location.getLongitude(), result);
-                        Log.d("starting location", "it reaches here3");
-                        updateGPSCamera();
-                        if(result[0] > 3 ){
-                            Log.d("starting location", "it reaches here");
-                            GMaps.this.googleMap.addMarker(marker);
-                            updateGPSCamera();
-                        }
+                LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+                LocationListener locationListener = new LocationListener() {
+                    public void onLocationChanged(Location location){
+                        updateMapUI(location);
                     }
-                    else{
-                        previous_location = location;
-                        GMaps.this.googleMap.addMarker(marker);
-                        Log.d("starting location", "it reaches here2");
-                        updateGPSCamera();
-                    }
-                    previous_location = location;
-                    GMaps.this.location = location;
-                    //Log.d("starting location", "it reaches here");
-                    LatLng startingLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                    event_visibility(location, startingLocation, result);
-                    polygon_visibility(result, startingLocation);
-                    //Log.d("starting location", "it creates it");
 
-
-                }
-
-                private void event_visibility(Location location, LatLng startingLocation, float[] result){
-                    for(int i = 0; i < markers.size(); i++){
-                        Marker mark = markers.get(i);
-                        LatLng event_loc = mark.getPosition();
-                        Location.distanceBetween(event_loc.latitude, event_loc.longitude, startingLocation.latitude, startingLocation.longitude, result);
-                        if(result[0] <= 40) {
-                            mark.setVisible(true);
-                        }
-                        else {
-                            mark.setVisible(false);
-                        }
-                    }
-                }
-
-                private void polygon_visibility(float[] result, LatLng startingLocation){
-                    for(PolygonHolder ph : polygonholder_list.values()){
-                        Location.distanceBetween(ph.center.latitude, ph.center.longitude, startingLocation.latitude, startingLocation.longitude, result);
-                        if(result[0] <= 40 + ph.radius){
-                            ph.polygon.setVisible(true);
-                            polygon_markers.get(ph.id).setVisible(true);
-
+                    private void updateMapUI(Location location) {
+                        here = new LatLng(location.getLatitude(), location.getLongitude());
+                        float[] result = new float[1];
+                        if(previous_location != null){
+                            Location.distanceBetween(previous_location.getLatitude(), previous_location.getLongitude(), location.getLatitude(), location.getLongitude(), result);
+                            Log.d("starting location", "it reaches here3");
+                            if(result[0] > 3 ){
+                                LatLng[] arrayLatLngs = new LatLng[2];
+                                arrayLatLngs[0] = here;
+                                arrayLatLngs[1] = getEndingLocation();
+                                new PlotDirectionTask().execute(arrayLatLngs);
+                                previous_location = location;
+                                Log.d("starting location", "it reaches here");
+                                you.setPosition(here);
+                                updateGPSCamera();
+                            }
                         }
                         else{
-                            ph.polygon.setVisible(false);
-                            polygon_markers.get(ph.id).setVisible(false);
+                            previous_location = location;
+                            you.setPosition(here);
+                            Log.d("starting location", "it reaches here2");
+                            updateGPSCamera();
+                        }
+                        GMaps.this.location = location;
+                        //Log.d("starting location", "it reaches here");
+                        LatLng startingLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                        event_visibility(location, startingLocation, result);
+                        polygon_visibility(result, startingLocation);
+                        //Log.d("starting location", "it creates it");
 
+
+                    }
+
+                    private void event_visibility(Location location, LatLng startingLocation, float[] result){
+                        for(int i = 0; i < markers.size(); i++){
+                            Marker mark = markers.get(i);
+                            LatLng event_loc = mark.getPosition();
+                            Location.distanceBetween(event_loc.latitude, event_loc.longitude, startingLocation.latitude, startingLocation.longitude, result);
+                            if(result[0] <= 40) {
+                                mark.setVisible(true);
+                            }
+                            else {
+                                mark.setVisible(false);
+                            }
                         }
                     }
-                }
+
+                    private void polygon_visibility(float[] result, LatLng startingLocation){
+                        for(PolygonHolder ph : polygonholder_list.values()){
+                            Location.distanceBetween(ph.center.latitude, ph.center.longitude, startingLocation.latitude, startingLocation.longitude, result);
+                            if(result[0] <= 40 + ph.radius){
+                                ph.polygon.setVisible(true);
+                                polygon_markers.get(ph.id).setVisible(true);
+
+                            }
+                            else{
+                                ph.polygon.setVisible(false);
+                                polygon_markers.get(ph.id).setVisible(false);
+
+                            }
+                        }
+                    }
 
 
-                @Override
-                public void onProviderDisabled(String paramString) {
-                    // TODO Auto-generated method stub
+                    @Override
+                    public void onProviderDisabled(String paramString) {
+                        // TODO Auto-generated method stub
 
-                }
+                    }
 
-                @Override
-                public void onProviderEnabled(String paramString) {
-                    // TODO Auto-generated method stub
+                    @Override
+                    public void onProviderEnabled(String paramString) {
+                        // TODO Auto-generated method stub
 
-                }
+                    }
 
-                @Override
-                public void onStatusChanged(String paramString,
-                                            int paramInt, Bundle paramBundle) {
-                    // TODO Auto-generated method stub
+                    @Override
+                    public void onStatusChanged(String paramString,
+                                                int paramInt, Bundle paramBundle) {
+                        // TODO Auto-generated method stub
 
-                }
+                    }
 
-            };
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                };
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            }
+
         }
     }
 
     public void updateGPSCamera(){
         LatLng loc =new LatLng(location.getLatitude(), location.getLongitude());
         float zoom= (float) 17.00;
-        //Set bearing here maybe?
         float bearing= location.getBearing();
-        float tilt= (float) 90.00;
-        CameraPosition cameraPosition = new CameraPosition(loc, zoom, tilt, bearing);
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(
-                cameraPosition));
+        if(previous_bearing != null){
+            if((Math.abs(bearing - previous_bearing) > 30 && Math.abs(bearing - previous_bearing) < 330)) {
+                float tilt = (float) 90.00;
+                CameraPosition cameraPosition = new CameraPosition(loc, zoom, tilt, bearing);
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(
+                        cameraPosition));
+                previous_bearing = bearing;
+            }
+        }
+        else{
+            float tilt = (float) 90.00;
+            CameraPosition cameraPosition = new CameraPosition(loc, zoom, tilt, bearing);
+            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(
+                    cameraPosition));
+            previous_bearing = bearing;
+        }
 
+
+    }
+
+    public LatLng getEndingLocation(){
+        Spinner building = (Spinner) findViewById(R.id.building);
+        int position = building.getSelectedItemPosition();
+//    	Log.e("Ending location", )
+        return buildings.get(position).getLocation();
     }
 
     public Location getLocation(){
@@ -564,13 +496,13 @@ public class GMaps extends FragmentActivity{
 
             }
         };
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,40*1000,2, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0, locationListener);
 
         if(location != null){
             return location;
         }
         else {
-            return locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         }
     }
 
