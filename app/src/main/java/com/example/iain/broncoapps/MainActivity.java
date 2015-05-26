@@ -174,7 +174,7 @@ public class MainActivity extends ActionBarActivity {
                         jArray2 = new JSONArray(jobject.getString("coordinates"));
                         String nested_array = "";
                         for(int j = 0; j < jArray2.length(); j++){
-                            org.json.JSONObject jobject2 = jArray2.getJSONObject(i);
+                            org.json.JSONObject jobject2 = jArray2.getJSONObject(j);
                             nested_array += jobject2.getString("k") + ", " +
                                     jobject2.getString("D") + "\t";
                         }

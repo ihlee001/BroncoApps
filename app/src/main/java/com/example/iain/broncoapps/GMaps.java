@@ -95,7 +95,7 @@ public class GMaps extends FragmentActivity{
             //Initialize Building drop down list Spinner
             initializeBuildings();
             createPolygons();
-            //initializeEvents();
+            initializeEvents();
             initializeGo();
         } catch(IOException e){
             e.printStackTrace();
@@ -185,10 +185,14 @@ public class GMaps extends FragmentActivity{
                 markers.add(mark);
             }
             else{
-                polygonholder_list.get(bn).add_event(events.get(i));
+                try{
+                    polygonholder_list.get(bn).add_event(events.get(i));
+                }
+                catch(Exception e){}
             }
         }
         for(PolygonHolder ph : polygonholder_list.values()){
+            Log.d("initializeEvents", "goes here");
             Marker mark = googleMap.addMarker(ph.getMarker());
             polygon_markers.put(ph.id, mark);
         }
@@ -217,8 +221,15 @@ public class GMaps extends FragmentActivity{
         polygonholder_list = new HashMap<Integer, PolygonHolder>();
         PolygonParser parser = new PolygonParser(Environment.getExternalStorageDirectory().getPath() + "/Download/buildingList1.txt");
         for(int index: parser.polygonoptions.keySet()){
+
             polygonholder_list.put(index, new PolygonHolder(googleMap.addPolygon(parser.polygonoptions.get(index)), index));
+            //googleMap.addPolygon(new PolygonOptions().addAll(parser.polygonoptions.get(index).getPoints()).strokeColor(Color.BLACK).strokeWidth(4).fillColor(0x3F000000));
+            Log.d("works", "" + parser.polygonoptions.get(index).getPoints() + ": " + index);
+
         }
+/*        polygonholder_list.put(5, new PolygonHolder(googleMap.addPolygon(new PolygonOptions().add(new LatLng(34.057886045422,-117.82490104437),
+                new LatLng(34.057886045422,-117.82490104437), new LatLng(34.057886045422,-117.82490104437),
+                new LatLng(34.057886045422,-117.82490104437)).strokeColor(Color.BLACK).strokeWidth(4).fillColor(0x3F000000)), 5));*/
 /*        polygonholder_list.put(8, new PolygonHolder(googleMap.addPolygon(new PolygonOptions().add(new LatLng(34.05871267583157, -117.82521486282349),
                 new LatLng(34.05891266584845, -117.8247481584549), new LatLng(34.05830380588406, -117.82436728477478),
                 new LatLng(34.058094925910545, -117.82487154006958)).strokeColor(Color.BLACK).strokeWidth(4).fillColor(0x3F000000)), 8));
@@ -484,7 +495,7 @@ public class GMaps extends FragmentActivity{
                         }
                         else{
                             ph.polygon.setVisible(false);
-                            polygon_markers.get(ph.id).setVisible(false);
+                            polygon_markers.get(ph.id).setVisible(true);
 
                         }
                     }

@@ -12,6 +12,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +43,13 @@ public class PolygonHolder {
         marker.visible(true);
         marker.position(below_center);
         marker.title("Events:");
+        try{
+
+            marker.icon(BitmapDescriptorFactory.fromResource(getResId(number, R.drawable.class)));
+        }
+        catch(Exception e){}
         //marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-        marker.icon(BitmapDescriptorFactory.fromResource(getResId(number, R.drawable.class)));
+
     }
 
     public void add_event(Event event){
