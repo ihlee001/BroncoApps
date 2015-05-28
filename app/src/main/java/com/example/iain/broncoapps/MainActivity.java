@@ -98,7 +98,11 @@ public class MainActivity extends ActionBarActivity {
             httppost.setHeader("Content-type", "application/json");
             httppost2.setHeader("Content-type", "application/json");
 
-            String path = Environment.getExternalStorageDirectory().getPath() + "/Download";
+            String path;
+            if(Environment.getExternalStorageState() != null){
+                path = Environment.getExternalStorageDirectory().getPath() + "/Download";
+            }
+            else path = Environment.getDataDirectory().getPath() + "/Download";
 
             File file = new File(path, "BuildingList2.txt");
             File file2 = new File(path, "BuildingList1.txt");

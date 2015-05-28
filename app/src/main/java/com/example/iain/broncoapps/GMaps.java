@@ -143,9 +143,11 @@ public class GMaps extends FragmentActivity{
 
 //////////////////////////////Building Initialization//////////////////////////////////////
     private void initializeBuildings() throws IOException{
-        buildings = new BuildingParser(Environment.getExternalStorageDirectory()
-                .getPath() + "/Download/buildingList.txt").getBuildingArray();
-
+        if(Environment.getExternalStorageState() != null){
+            buildings = new BuildingParser(Environment.getExternalStorageDirectory()
+                    .getPath() + "/Download/buildingList.txt").getBuildingArray();
+        }
+        else buildings = new BuildingParser(Environment.getDataDirectory().getPath() + "/Download/buildingList.txt").getBuildingArray();
         /*//Tester
         for( int i  =0 ; i < buildings.size(); i++){
             Log.i("Building", buildings.get(i).getString());
@@ -172,9 +174,14 @@ public class GMaps extends FragmentActivity{
 /////////////////////////////////////Event Initializer///////////////////////////////////////////
     public void initializeEvents() throws IOException{
         ArrayList<Event> events = new ArrayList<Event>();
+        EventParser parser;
 
-        EventParser parser = new EventParser(Environment.getExternalStorageDirectory().getPath() + "/Download/buildingList2.txt");
-
+        if(Environment.getExternalStorageState() != null){
+            parser = new EventParser(Environment.getExternalStorageDirectory().getPath() + "/Download/buildingList2.txt");
+        }
+        else{
+            parser = new EventParser(Environment.getDataDirectory().getPath() + "/Download/buildingList2.txt");
+        }
         events = parser.getEvents();
         Log.d("initializeEvents", "" + events.size());
         for(int i = 0; i < events.size(); i++){
@@ -222,7 +229,11 @@ public class GMaps extends FragmentActivity{
 ///////////////////////////////////Polygon Initializer/////////////////////////////////////////////
     public void createPolygons() throws IOException{
         polygonholder_list = new HashMap<Integer, PolygonHolder>();
-        PolygonParser parser = new PolygonParser(Environment.getExternalStorageDirectory().getPath() + "/Download/buildingList1.txt");
+        PolygonParser parser;
+        if(Environment.getExternalStorageState() != null){
+            parser = new PolygonParser(Environment.getExternalStorageDirectory().getPath() + "/Download/buildingList1.txt");
+        }
+        else parser = new PolygonParser(Environment.getDataDirectory().getPath() + "/Download/buildingList1.txt");
         for(int index: parser.polygonoptions.keySet()){
 
             polygonholder_list.put(index, new PolygonHolder(googleMap.addPolygon(parser.polygonoptions.get(index)), index));
@@ -519,8 +530,11 @@ public class GMaps extends FragmentActivity{
             httppost.setHeader("Content-type", "application/json");
             HttpPost httpost2 = new HttpPost("http://ec2-52-10-224-162.us-west-2.compute.amazonaws.com/edit/locations/data/");
 
-            String path = Environment.getExternalStorageDirectory().getPath() + "/Download";
-
+            String path;
+            if(Environment.getExternalStorageState() != null){
+                path = Environment.getExternalStorageDirectory().getPath() + "/Download";
+            }
+            else path = Environment.getDataDirectory().getPath() + "/Download";
             File file = new File(path, "BuildingList2.txt");
 
             InputStream inputStream = null;
