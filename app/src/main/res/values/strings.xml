@@ -22,5 +22,5 @@
         <item>Driving</item>
         <item>Walking</item>
     </string-array>
-    <string name="mode_prompt">Choose a Building</string>
+    <string name="mode_prompt">Choose a mode</string>
 </resources>

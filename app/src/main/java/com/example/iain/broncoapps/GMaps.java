@@ -320,7 +320,7 @@ public class GMaps extends FragmentActivity{
             start = latlong[0];
 
             end  =latlong[1];
-            Document doc = md.getDocument(start, end, GMapV2Direction.MODE_WALKING);
+            Document doc = md.getDocument(start, end, getDrivingMode());
             Log.e("Direction", doc.toString());
             ArrayList<LatLng> directionPoint = md.getDirection(doc);
             return directionPoint;
@@ -472,6 +472,13 @@ public class GMaps extends FragmentActivity{
         }
 
 
+    }
+
+    public String getDrivingMode(){
+        Spinner mode = (Spinner) findViewById(R.id.mode);
+        int position = mode.getSelectedItemPosition();
+        if(position == 0) return GMapV2Direction.MODE_DRIVING;
+        else return GMapV2Direction.MODE_WALKING;
     }
 
     public LatLng getEndingLocation(){
